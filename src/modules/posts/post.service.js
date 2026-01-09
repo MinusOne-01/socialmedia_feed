@@ -13,8 +13,25 @@ export async function createPost( userId, content ){
 export async function getPostInfo( postId ){
     try{
 
-        const post = getPostInfo_db( postId );
-        return post;
+        const result = await getPostInfo_db( postId );
+        console.log(result);
+
+        const formattedResponse = {
+            post: {
+                id: result.id,
+                content: result.content,
+                author: result.userId,
+            },
+            stats: {
+                likeCount: result._count.postLikes,
+                commentCount: result._count.postComments,
+                // Check if the array contains the record we filtered for
+                likedByMe: result.postLikes ? result.postLikes.length > 0 : false
+            },
+            comments: result.postComments
+        };
+
+        return formattedResponse;
 
     }
     catch(error){

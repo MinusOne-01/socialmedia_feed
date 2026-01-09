@@ -10,27 +10,27 @@ export async function createPost_db( userId, content ){
     });
 }
 
-export async function getPostInfo_db( postId ) {
+export async function getPostInfo_db( postId, userId ) {
 
     return await prisma.posts.findUnique({
-        where: {
-            id: postId,
-        },
+        where: { id: postId },
         include: {
-            // 1. Fetch the 20 most recent comments
             postComments: {
                 take: 20,
-                orderBy: {
-                    createdAt: 'desc',
-                },
-                include: {
-                    users: true, // Optional: includes comment author details
-                }
+                orderBy: { createdAt: 'desc' },
+                include: { users: true }
             },
-            // 2. Count the number of like records
+            // Spread operator ensures postLikes is only added to the object if userId exists
+            ...(userId && {
+                postLikes: {
+                    where: { userId },
+                    select: { userId: true },
+                }
+            }),
             _count: {
                 select: {
                     postLikes: true,
+                    postComments: true // Added this for your "stats" requirement
                 },
             },
         },
