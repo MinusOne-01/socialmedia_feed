@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Users {
+  id          String      @id @default(uuid())
+  username    String
+  createdAt   DateTime    @default(now())
+
+  posts       Posts[]
+  likes       Likes[]
+  comments    Comments[]
+
+  following   Follows[] @relation("followers")
+  followedBy  Follows[] @relation("following")
+  
+}
+
+
+
+model Posts {
+  id          String      @id @default(uuid())
+  userId      String
+  content     String
+  createdAt   DateTime    @default(now())
+
+  postLikes    Likes[]
+  postComments Comments[]
+
+  users     Users    @relation(fields: [userId], references: [id])
+
+  @@index([userId(sort: Desc)])
+}
+
+
+
+model Follows {
+  followerId   String
+  followeeId   String
+  createdAt    DateTime    @default(now())
+
+  followers   Users    @relation("followers", fields: [followerId], references: [id])
+  following   Users    @relation("following", fields: [followeeId], references: [id])
+
+  @@id([followerId, followeeId])
+  @@index([followeeId])
+  @@index([followerId])
+}
+
+
+
+model Likes {
+  userId      String
+  postId      String
+  createdAt   DateTime    @default(now())
+  
+  user     Users    @relation(fields: [userId], references: [id])
+  posts    Posts    @relation(fields: [postId], references: [id])
+
+  @@id([userId, postId])
+}
+
+
+
+model Comments {
+  id         String       @id @default(uuid())
+  postId     String
+  userId     String
+  content    String
+  createdAt  DateTime    @default(now())
+
+  users    Users    @relation(fields: [userId], references: [id])
+  posts    Posts    @relation(fields: [postId], references: [id])
+
+  @@index([postId, createdAt])
+}
+
