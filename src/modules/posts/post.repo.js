@@ -18,7 +18,14 @@ export async function getPostInfo_db( postId, userId ) {
             postComments: {
                 take: 20,
                 orderBy: { createdAt: 'desc' },
-                include: { users: true }
+                include: {
+                    users: {
+                        select: {
+                            id: true,
+                            username: true
+                        }
+                    }
+                },
             },
             // Spread operator ensures postLikes is only added to the object if userId exists
             ...(userId && {
@@ -33,6 +40,34 @@ export async function getPostInfo_db( postId, userId ) {
                     postComments: true // Added this for your "stats" requirement
                 },
             },
+        },
+    });
+}
+
+
+export async function getPostComments_db( postId, cursor ) {
+
+    return await prisma.posts.findUnique({
+        where: { id: postId },
+        include: {
+            postComments: {
+                take: 20,
+                orderBy: [
+                    { createdAt: 'desc' },
+                    { id: 'desc' }
+                ],
+                ...(cursor && {
+                    where: {
+                        OR: [
+                            { createdAt: { lt: cursor.createdAt } },
+                            {
+                                createdAt: cursor.createdAt,
+                                id: { lt: cursor.id }
+                            }
+                        ]
+                    }
+                })
+            }
         },
     });
 }

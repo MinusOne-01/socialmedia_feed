@@ -85,6 +85,6 @@ model Comments {
   users    Users    @relation(fields: [userId], references: [id])
   posts    Posts    @relation(fields: [postId], references: [id])
 
-  @@index([postId, createdAt])
+  @@index([postId, createdAt(sort: Desc), id(sort: Desc)])
 }
 
