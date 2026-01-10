@@ -42,7 +42,7 @@ model Posts {
 
   users     Users    @relation(fields: [userId], references: [id])
 
-  @@index([userId(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc), id(sort: Desc)])
 }
 
 

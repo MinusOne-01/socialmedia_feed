@@ -17,7 +17,7 @@ export async function getFeed(req, res, next){
         }    
         
         await verifyUser( userId );
-        const limit = 20;
+        const limit = 2;
 
         const feed = await buildFeed( userId, cursor, limit);
 
