@@ -23,6 +23,7 @@ model Users {
   posts       Posts[]
   likes       Likes[]
   comments    Comments[]
+  feed        Feed[]
 
   following   Follows[] @relation("followers")
   followedBy  Follows[] @relation("following")
@@ -39,6 +40,7 @@ model Posts {
 
   postLikes    Likes[]
   postComments Comments[]
+  feed         Feed[]
 
   users     Users    @relation(fields: [userId], references: [id])
 
@@ -86,5 +88,18 @@ model Comments {
   posts    Posts    @relation(fields: [postId], references: [id])
 
   @@index([postId, createdAt(sort: Desc), id(sort: Desc)])
+}
+
+model Feed {
+  userId          String
+  postId          String
+  postCreatedAt   DateTime
+  authorId        String
+
+  users    Users    @relation(fields: [userId], references: [id])
+  posts    Posts    @relation(fields: [postId], references: [id])
+   
+  @@id([userId, postId, postCreatedAt])
+  @@index([userId, postCreatedAt(sort: Desc), postId(sort: Desc)])
 }
 

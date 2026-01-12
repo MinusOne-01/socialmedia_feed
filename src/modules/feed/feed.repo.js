@@ -9,19 +9,31 @@ export async function getfollowingList_db( userId ){
 
 }
 
-export async function getPostsList_db( followedIds, cursorCondition, limit ){
+export async function getPostsList_db( userId, cursorCondition, limit ){
 
-    return await prisma.posts.findMany({
+    return await prisma.feed.findMany({
         where: {
-            userId: { in: followedIds },
+            userId,
             ...cursorCondition
         },
         orderBy: [
-            { createdAt: "desc" },
-            { id: "desc" }
+            { postCreatedAt: "desc" },
+            { postId: "desc" }
         ],
         take: limit,
     });
+
+}
+
+export async function getPosts_db( postIds ){
+
+    return await prisma.posts.findMany({
+        where: { id:{ in: postIds } },
+        orderBy: [
+            { createdAt: "desc" },
+            { id: "desc" }
+        ]
+    })
 
 }
 

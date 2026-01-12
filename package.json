@@ -12,6 +12,7 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^6.19.1",
+    "bullmq": "^5.66.5",
     "cors": "^2.8.5",
     "express": "^5.2.1",
     "ioredis": "^5.9.1",

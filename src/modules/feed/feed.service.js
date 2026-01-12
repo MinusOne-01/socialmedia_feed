@@ -1,38 +1,29 @@
-import { getfollowingList_db, getPostsList_db, getLikCount_db, getAuthorInfo_db, getLikedbyUser_db } from "./feed.repo.js";
+import { getfollowingList_db, getPostsList_db, getLikCount_db, getAuthorInfo_db, getLikedbyUser_db, getPosts_db } from "./feed.repo.js";
 
 export async function buildFeed( userId, cursor, limit ){
     try {
-
-        // fetch all following ids, make a set
-        const followed = await getfollowingList_db(userId);
-
-
-        if (followed.length === 0) {
-            return { Message: "Follow someone to get there posts" } ;
-        }
-        const followedIds = followed.map(p => p.followeeId);
-
 
         // build cursor snippet for db
         let cursorCondition = {};
         if (cursor) {
             cursorCondition = {
                 OR: [
-                    { createdAt: { lt: cursor.createdAt } },
+                    { postCreatedAt: { lt: cursor.createdAt } },
                     {
-                        createdAt: cursor.createdAt,
-                        id: { lt: cursor.postId }
+                        postCreatedAt: cursor.createdAt,
+                        postId: { lt: cursor.id }
                     }
                 ]
             };
         }
 
         // fetch all posts by followedIds
-        const posts = await getPostsList_db(followedIds, cursorCondition, limit);
+        const postsList = await getPostsList_db(userId, cursorCondition, limit);
 
+        const postIds = postsList.map(p => p.postId);
+        const authorIds = postsList.map(p => p.authorId);
 
-        const postIds = posts.map(p => p.id);
-        const authorIds = posts.map(p => p.userId);
+        const posts = await getPosts_db( postIds );
 
         // fetch each post likes n make a map
         const likeCounts = await getLikCount_db(postIds);

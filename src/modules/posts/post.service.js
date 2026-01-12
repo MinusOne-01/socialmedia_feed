@@ -1,8 +1,16 @@
 import { createPost_db, getPostInfo_db, getPostComments_db } from "./post.repo.js";
+import { feedQueue } from "../../queue/feed.queue.js";
 
 export async function createPost( userId, content ){
     try{
         const post = await createPost_db(userId, content);
+
+        await feedQueue.add("fanout", {
+            postId: post.id,
+            authorId: userId,
+            createdAt: post.createdAt.toISOString()
+        });
+
         return post;
     }
     catch(error){
