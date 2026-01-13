@@ -6,7 +6,7 @@ async function seed() {
   console.log("Generating users...");
 
   // Create users with random join dates from the last year
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 1000000; i++) {
     await prisma.users.create({
       data: {
         username: faker.internet.username(),
