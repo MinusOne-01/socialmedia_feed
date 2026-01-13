@@ -7,7 +7,6 @@ new Worker(
   "feed-fanout",
   async job => {
     if (job.name === "fanout") {
-        console.log("worker here...")
       await handleFanout(job.data);
     }
   },

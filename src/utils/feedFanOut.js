@@ -1,8 +1,6 @@
 import { prisma } from "../configs/prisma.js"
 
 export async function handleFanout({ postId, authorId, createdAt }){
-    
-    console.log("Fan-out start...");
 
     const followers = await prisma.follows.findMany({
         where: { followeeId: authorId },
@@ -26,8 +24,5 @@ export async function handleFanout({ postId, authorId, createdAt }){
             skipDuplicates: true
         });
     }
-
-    console.log("Fan-out done!");
-
 
 }

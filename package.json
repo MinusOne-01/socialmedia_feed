@@ -5,7 +5,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "seedusers": "node src/utils/seed.users.js",
+    "seedposts": "node src/utils/seed.posts.js",
+    "seedfollows": "node src/utils/seed.follow.js",
+    "fanout": "node src/worker/feed.worker.js"
   },
   "author": "",
   "license": "ISC",
@@ -18,5 +22,8 @@
     "ioredis": "^5.9.1",
     "prisma": "^6.19.1"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@faker-js/faker": "^10.2.0"
+  }
 }
